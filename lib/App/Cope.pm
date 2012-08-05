@@ -107,7 +107,8 @@ sub run {
     exec @args;
   }
   else {
-    run_with( $process, @args );
+    my $ret_val = run_with( $process, @args );
+    exit $ret_val;
   }
 }
 
@@ -171,6 +172,9 @@ sub run_with {
 
   $fh->close  or carp "Failed close: $!";
   $pty->close or carp "Failed close: $!";
+
+  waitpid($pty->{pid}, 0);
+  return ($? >> 8);
 }
 
 =head2 mark( $regex, $colour )
@@ -220,8 +224,8 @@ sub line {
       # match, e.g. /(?: (\S+) )?/x where the match fails.
       if ( defined $start and defined $end ) {
         my $before = substr $_, $start, $end - $start;
-	my $c = get( $colour, $before );
-	colour( $start, $end => $c );
+        my $c = get( $colour, $before );
+        colour( $start, $end => $c );
       }
     }
 
