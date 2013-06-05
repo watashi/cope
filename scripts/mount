@@ -6,7 +6,7 @@ my @headers = qw[NAME LINE TIME IDLE PID COMMENT EXIT];
 my $me = (getpwuid( $< ))[0] || "nobody";
 
 my $date_re = qr!(?: \d{4}-\d{2}-\d{2} # 1970-01-01
-		 |   \w{3}\s[\s\d]\d      # Jan 01 / Jan  1
+		 |   \w{3}\s\d{2}      # Jan 01
 		 ) \s
 		 \d{2}:\d{2}!x;   # time: 12:34
 
@@ -20,23 +20,16 @@ sub process {
     for my $h (@headers) { mark $h => 'underline'; }
   }
   else {
-
-    # user name
-    line qr{^(\w+)} => { $me   => 'yellow bold',  # current user
-			 LOGIN => 'magenta bold', # login user
-			 _else => 'yellow',	  # anyone else
-		       };
-
-    line qr{^\w+\s+([-+?])} => { '+' => 'green bold', # write access to other users
-				 '-' => 'red bold',   # no write access
-				 '?' => 'cyan bold',  # unable to determine
-			       };
-
+    line qr{^([\w\.\-]+)} => 'yellow bold';
+    line qr{^([\w/\.\-]*/)([\w\.-]+)} => 'yellow','yellow bold';
+    #line qr{^(\w+) \w+ ([a-zA-Z0-9/]+) \w+ (.*)} => 'magenta bold','red','blue';
+    line qr{\s(type )([\w\.-]+)} => '','cyan bold';
+    line qr{\s(\(.*\))} => 'blue';
+    line qr{\s(on )([\w/]*/)([\w\.-]*)} => '','magenta','red bold';
     # line
     line qr{\s(vc)(/\d+)\b}       => 'blue',    'blue bold';
     line qr{\s(pts)(/\d+)\b}      => 'green',   'green bold';
     line qr{\s(ttys?|p|s)(\d+)\b} => 'magenta', 'magenta bold';
-    line qr{\s(console)\b}        => 'magenta';
     line qr{\s(system boot)\b}    => 'red';
     line qr{\s(run-level \d)\b}   => 'red';
 
@@ -46,8 +39,8 @@ sub process {
       sub { (shift) ? 'cyan bold' : 'cyan' };
 
     # comment
-    mark qr{\(\S+\)}         => 'blue';
-    mark qr{(?:id|last)=\S+} => 'cyan';
+    #mark qr{\(\S+\)}         => 'blue';
+    #mark qr{(?:id|last)=\S+} => 'cyan';
   }
 }
 
