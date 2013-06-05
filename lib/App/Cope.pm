@@ -3,6 +3,7 @@ package App::Cope;
 use strict;
 use warnings;
 use 5.010_000;
+no if $] >= 5.018, 'warnings', 'experimental::smartmatch';
 use Carp;
 
 our $VERSION = '0.99';

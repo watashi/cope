@@ -3,6 +3,9 @@ use App::Cope qw[run real_path colourise mark line];
 use App::Cope::Extra qw[user nonzero];
 use Term::ANSIColor;
 
+no if $] >= 5.018, 'warnings', 'experimental::smartmatch';
+use feature 'switch';
+
 # The diversity of ps's available output formats is useful, but makes
 # it annoyingly-difficult to parse. Instead of treating each line with
 # a pre-defined set of columns, parse the header line and format it
