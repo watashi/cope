@@ -1,6 +1,9 @@
 #!/usr/bin/env perl
 use App::Cope;
 
+no if $] >= 5.018, 'warnings', 'experimental::smartmatch';
+use feature 'switch';
+
 sub process {
 
   # make's own commands
@@ -18,9 +21,9 @@ sub process {
   given ( $line ) {
     when ( m{^g?cc|g\+\+} ) {
       if ( m{\s-c\s} ) {
-	line qr{\s(-o)\s+(\S+)} => 'blue', 'blue bold'; # object file
+        line qr{\s(-o)\s+(\S+)} => 'blue', 'blue bold'; # object file
       } else {
-	line qr{\s(-o)\s+(\S+)} => 'blue', 'blue bold underline'; # executable file
+        line qr{\s(-o)\s+(\S+)} => 'blue', 'blue bold underline'; # executable file
       }
     }
   }
